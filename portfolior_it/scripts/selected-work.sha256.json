@@ -1,0 +1,7 @@
+{
+  "src/components/sections/SelectedWork.jsx": "ec661646f5a6317412f2699fd85b7eb8cbf4a476aa34d64c2d0ad2d3b58f1cab",
+  "src/components/projects/ProjectCard.jsx": "e3537303bf3c272a79d1ace1e3c10e21dbe97f48c6897cf33b28a26129a865f7",
+  "src/components/projects/ProjectDetail.jsx": "b0c198c66f14a2829cc200f6d0d82882fb8f240b3a7249f350a5318ceb31f278",
+  "src/components/projects/ProjectGallery.jsx": "f7c9f430bb252e55b565b6d2911fef2df9fd9240ac92995e4a3e93f31d9be6e8",
+  "src/data/projects.js": "8f9b5e82861a921fcf37ef7ab87b781cf9bfcda9f75172c1c30eededeae6a4c0"
+}
