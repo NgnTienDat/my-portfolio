@@ -1,0 +1,330 @@
+{
+  "text": [
+    "Software engineer: Java + full-stackI turn real problems into working software.From problem → production, I handle the code.Hi, I’m Nguyen Tien Dat, a Java-focused software engineer in Ho Chi Minh City. Available immediately for backend internships and graduate roles, onsite or hybrid.See my workDownload resumeGitHubLinkedInEmailDat.java1public class Dat implements Engineer {2 String focus = \"Java, Spring Boot\";3 String also = \"React, Docker, AWS\";4 5 Product build(Problem p) {6 return design(p).code().deploy();7 }8}Now buildingTheOULive at theou.tech Ships toAzure + DockerEngineering with the problem in mindHCMC, VietnamNguyen Tien DatSoftware Engineer → Java backend & full-stackI start with the real workflow, then build the backend, connect the frontend, and take the product through deployment.What I enjoy most is turning a vague idea into something people can actually use.I like asking questions early, working through trade-offs, and finding the simplest solution that genuinely helps.Shipping is a milestone, not the finish line.I care about how software behaves after release — when real users, edge cases, and unexpected problems enter the picture.Selected workProjects I designed, built, and deployed.OUTheOUAnonymous campus platform, in development and testing.ReactTypeScriptSupabasePostgreSQL100 → 1concurrent retries with one idempotency key create exactly one rowView case studyVisit websiteTNTN1983Production storefront and management tools for a family coffee roastery.Spring BootReactPostgreSQLAzureLivecentralized products, customers, and order status for a family businessView case studyLive siteVOVaniOAKDev/Test log monitoring and alerting, built as a mentored capstone.Spring BootRabbitMQClickHouseRedis~1k/saccepted logs in a 5-minute k6 test; p95 end-to-end latency 1.891sView case studyFrom problem to productionThree habits I bring to every project.01Understand the problemBefore choosing any technology, I clarify who will use it, what they need, and what done looks like.02Design for reliabilityI plan the data model and the flow between components so the system copes with slow services, retries, and failures.03Ship and improveI deploy early with Docker and CI/CD, watch how the system behaves, and keep refining it.Experience & educationApr 2026 to Aug 2026Viettel Digital TalentSoftware Engineer TraineeDeveloped a personal Dev/Test log-monitoring capstone under mentor guidance. Designed a Spring Boot modular monolith with RabbitMQ, ClickHouse, PostgreSQL, and Redis alert deduplication; built SSE monitoring and Telegram alerts. A 5-minute k6 measurement accepted about 1,000 logs/s with p95 end-to-end latency of 1.891s.Nov 2025 to Feb 2026iTeach Online EnglishFullstack Developer InternWorked in a three-person Agile/Scrum team with two-week sprints, pull requests, and code reviews. Built Spring Boot and MySQL REST APIs with RBAC for four roles using Spring Security and stateless JWT, contributed React features, and configured GitHub Actions and Docker deployment to Google Cloud Run.2022 to 2026Ho Chi Minh City Open UniversityBSc, Computer Science · In progressExpected program completion: December 2026. Certifications: TOEIC Listening & Reading 760/990, IIG Vietnam (August 2025), and DevOps for Freshers, DEVOPSEDU.VN (October 2026).ExpertiseTools I’ve used in internships and personal projects.Backend & APIsJavaSpring BootSpring SecuritySpring Data JPAHibernateRESTJWTSupabaseData & MessagingMySQLPostgreSQLClickHouseRabbitMQRedisFrontendReactTypeScriptNext.jsJavaScriptHTMLCSSTailwind CSSDelivery, Cloud & TestingGitGitHub ActionsDockerAWS EC2Azure VMCloud RunNginxCloudflareJUnit 5Mockitok6AI coding toolsChatGPTOpenAI CodexI treat AI as a working partner. I talk through every problem and trade-off with ChatGPT, then make the decisions myself. Most of the code is written by OpenAI Codex; my role is to find the solution, set the direction, and make the call.QuestionsWhat do you work with most?Java and Spring Boot on the backend, with React or Next.js when a project needs a frontend. I deploy with Docker and GitHub Actions to Azure, AWS, or Google Cloud Run.Can you work across the whole stack?Yes. I worked on full-stack features at iTeach, and TN1983 is a full-stack project from data model to deployment.What are you building now?TheOU, a campus platform deployed for development and testing, and TN1983, a production system for a family coffee roastery. TheOU is an independent project and is not an official university product.What opportunities are you looking for?Java Backend internships, fresher, and graduate software engineering roles in Ho Chi Minh City. I’m available immediately for onsite or hybrid work and also consider full-stack opportunities. Email is the fastest way to reach me.Have something worth building? Let’s talk.Open to Java Backend internships and graduate software engineering roles in Ho Chi Minh City. Available immediately for onsite or hybrid work.Say hello by emailGitHubLinkedIn",
+    "‹ Back to workDevelopment screenshots with test content.Campus feedTopic filters, posts, and voting in the development environment.Post detailDiscussion, upvotes, and the Chủ bài label for the post author.Create a postAnonymous or nickname mode, image attachments, and campus topics.Personal project · Nov 2026–presentTheOU: Anonymous Campus PlatformA campus community platform gated by verified @ou.edu.vn email.The problemStudents need a dedicated place to share stories, ask questions, and discuss campus life without necessarily revealing their identity.Decision & solutionI designed and built the frontend, database, authentication, and Edge Function APIs. Idempotency keys and PostgreSQL unique constraints prevent duplicate writes; triggers and atomic updates keep vote counts consistent under concurrent requests.What I deliveredReact and TypeScript frontend, verified student-email registration, and session managementPost, comment, and voting APIs with idempotency and database-level consistencyDeployment on a custom domain and concurrency testing of retries and upvotesResultRetries to rows100 → 1Concurrent upvotes200Vote count drift0Technical foundationReact • TypeScript • Supabase Auth • PostgreSQL • Edge Functions • CloudflareThe idempotency test recorded one row from 100 retries. A separate k6 test recorded 200 vote rows from 200 concurrent upvotes with no count drift. Currently in development and testing. Independent project, not an official product of Ho Chi Minh City Open University.Visit websiteSource",
+    "‹ Back to workStorefront and admin screenshots. Customer and order data are demo data.StorefrontThe coffee roastery website and its product introduction.Admin dashboardAn overview of the order workflow and business reporting interface.Order managementOrder filters and processing statuses, shown with demo records.Customer managementCentralized customer information, shown with demo contact details.Order trackingCustomer-facing order progress and status history, using a demo order.Personal project · Sep 2026–presentTN1983: Coffee Roastery ManagementFrom phone and Zalo orders to a centralized business workflow.The problemA family coffee roastery received orders by phone, Zalo, and in person. Product, customer, and order information needed one place for tracking progress.Decision & solutionI gathered the business requirements and built the database, REST APIs, storefront, and admin dashboard. Order states and history make progress explicit; JWT refresh-token rotation and reuse detection protect administrator sessions.What I deliveredProduct, customer, and order management with status history and customer-facing order trackingSpring Security authentication, refresh-token rotation, and reuse detection, tested with JUnit 5 and MockitoGitHub Actions and Docker deployment to Azure VM, served through Nginx and CloudflareResultIn productionLiveOrder trackingStatus flowAutomated deploysCI/CDTechnical foundationJava • Spring Boot • Spring Security • React • Next.js • PostgreSQL/Neon • Docker • AzureDeveloped independently for a family business and still being improved. Screenshots use demo customer and order data.Live siteSource",
+    "‹ Back to workPrototype screenshots with simulated logs and incidents.Overview dashboardApplication health, log activity, and incident summaries using simulated data.Log searchThe log explorer and live-stream interface, shown with synthetic events.Incident detailIncident information and activity history in the interactive prototype.Mentored capstone · Apr–Aug 2026VaniOAK: Log Monitoring & AlertingCentralized logs, live monitoring, and deduplicated Dev/Test alerts.The problemDevelopers needed one place to search logs from multiple backend services, follow errors in real time, and receive alerts in a Dev/Test environment.Decision & solutionI designed a Spring Boot modular monolith under mentor guidance. RabbitMQ buffers ingestion and separates processing responsibilities, ClickHouse stores logs for querying, and Redis deduplicates alerts before Telegram delivery.What I deliveredAsynchronous log ingestion and processing with RabbitMQ, ClickHouse, and PostgreSQLReal-time monitoring over SSE and Telegram alerts with Redis-based deduplicationk6 load testing with downstream reconciliation; subsequent personal development of alert-rule CRUD and soft deletionResultAccepted logs/s999.67p95 end-to-end1.891sReconciled after drain100%Technical foundationJava • Spring Boot • RabbitMQ • ClickHouse • PostgreSQL • Redis • SSE • DockerLocal k6 test: 20s warm-up and 300s measurement, with 100 INFO logs per request. All 320,000 accepted logs were reconciled after drain. Windows and Java 21; backend heap 512 MiB. Personal capstone during Viettel Digital Talent with mentor guidance, not an official Viettel product. Repository currently private.",
+    "© 2026 Nguyen Tien DatGitHubLinkedInBack to top"
+  ],
+  "links": [
+    [
+      "DN",
+      "#top",
+      null,
+      null,
+      "Nguyen Tien Dat, home"
+    ],
+    [
+      "About",
+      "#about",
+      null,
+      null,
+      null
+    ],
+    [
+      "Work",
+      "#work",
+      null,
+      null,
+      null
+    ],
+    [
+      "Process",
+      "#process",
+      null,
+      null,
+      null
+    ],
+    [
+      "Experience",
+      "#experience",
+      null,
+      null,
+      null
+    ],
+    [
+      "Resume",
+      "/src/assets/NguyenTienDat_CV.pdf",
+      "NguyenTienDat_CV.pdf",
+      null,
+      null
+    ],
+    [
+      "See my work",
+      "#work",
+      null,
+      null,
+      null
+    ],
+    [
+      "Download resume",
+      "/src/assets/NguyenTienDat_CV.pdf",
+      "NguyenTienDat_CV.pdf",
+      null,
+      null
+    ],
+    [
+      "GitHub",
+      "https://github.com/NgnTienDat",
+      null,
+      "_blank",
+      null
+    ],
+    [
+      "LinkedIn",
+      "https://www.linkedin.com/in/dat-nguyen-964ntd/",
+      null,
+      "_blank",
+      null
+    ],
+    [
+      "Email",
+      "mailto:tie.dat2004@gmail.com",
+      null,
+      null,
+      "Email, copy address"
+    ],
+    [
+      "",
+      "https://github.com/NgnTienDat",
+      null,
+      "_blank",
+      "GitHub"
+    ],
+    [
+      "",
+      "https://www.linkedin.com/in/dat-nguyen-964ntd/",
+      null,
+      "_blank",
+      "LinkedIn"
+    ],
+    [
+      "",
+      "mailto:tie.dat2004@gmail.com",
+      null,
+      null,
+      "Email, copy address"
+    ],
+    [
+      "",
+      "#project-theou",
+      null,
+      null,
+      null
+    ],
+    [
+      "View case study",
+      "#project-theou",
+      null,
+      null,
+      null
+    ],
+    [
+      "Visit website",
+      "https://theou.tech",
+      null,
+      "_blank",
+      null
+    ],
+    [
+      "",
+      "#project-tn1983",
+      null,
+      null,
+      null
+    ],
+    [
+      "View case study",
+      "#project-tn1983",
+      null,
+      null,
+      null
+    ],
+    [
+      "Live site",
+      "https://www.trongnhamcoffee.me/",
+      null,
+      "_blank",
+      null
+    ],
+    [
+      "",
+      "#project-log-monitoring",
+      null,
+      null,
+      null
+    ],
+    [
+      "View case study",
+      "#project-log-monitoring",
+      null,
+      null,
+      null
+    ],
+    [
+      "Say hello by email",
+      "mailto:tie.dat2004@gmail.com",
+      null,
+      null,
+      "Say hello by email, copy address"
+    ],
+    [
+      "GitHub",
+      "https://github.com/NgnTienDat",
+      null,
+      "_blank",
+      null
+    ],
+    [
+      "LinkedIn",
+      "https://www.linkedin.com/in/dat-nguyen-964ntd/",
+      null,
+      "_blank",
+      null
+    ],
+    [
+      "‹ Back to work",
+      "#work",
+      null,
+      null,
+      null
+    ],
+    [
+      "Visit website",
+      "https://theou.tech",
+      null,
+      "_blank",
+      null
+    ],
+    [
+      "Source",
+      "https://github.com/NgnTienDat/TheOU",
+      null,
+      "_blank",
+      null
+    ],
+    [
+      "‹ Back to work",
+      "#work",
+      null,
+      null,
+      null
+    ],
+    [
+      "Live site",
+      "https://www.trongnhamcoffee.me/",
+      null,
+      "_blank",
+      null
+    ],
+    [
+      "Source",
+      "https://github.com/NgnTienDat/tn1983-crm-system",
+      null,
+      "_blank",
+      null
+    ],
+    [
+      "‹ Back to work",
+      "#work",
+      null,
+      null,
+      null
+    ],
+    [
+      "GitHub",
+      "https://github.com/NgnTienDat",
+      null,
+      "_blank",
+      null
+    ],
+    [
+      "LinkedIn",
+      "https://www.linkedin.com/in/dat-nguyen-964ntd/",
+      null,
+      "_blank",
+      null
+    ],
+    [
+      "Back to top",
+      "#top",
+      null,
+      null,
+      null
+    ]
+  ],
+  "images": [
+    [
+      "/src/assets/my_pic.png",
+      "Portrait of Nguyen Tien Dat"
+    ],
+    [
+      "/src/assets/theou/feed.png",
+      ""
+    ],
+    [
+      "/src/assets/tn1983/storefront.png",
+      ""
+    ],
+    [
+      "/src/assets/vanioak/dashboard.png",
+      ""
+    ],
+    [
+      "/portfolio/viettel.webp",
+      ""
+    ],
+    [
+      "/portfolio/iteach.webp",
+      ""
+    ],
+    [
+      "/portfolio/open-university.webp",
+      ""
+    ],
+    [
+      "/src/assets/theou/feed.png",
+      "Campus feed"
+    ],
+    [
+      "/src/assets/theou/post-detail.png",
+      "Post detail"
+    ],
+    [
+      "/src/assets/theou/create-post.png",
+      "Create a post"
+    ],
+    [
+      "/src/assets/tn1983/storefront.png",
+      "Storefront"
+    ],
+    [
+      "/src/assets/tn1983/admin-dashboard.png",
+      "Admin dashboard"
+    ],
+    [
+      "/src/assets/tn1983/order-management.png",
+      "Order management"
+    ],
+    [
+      "/src/assets/tn1983/customer-management.png",
+      "Customer management"
+    ],
+    [
+      "/src/assets/tn1983/order-research.png",
+      "Order tracking"
+    ],
+    [
+      "/src/assets/vanioak/dashboard.png",
+      "Overview dashboard"
+    ],
+    [
+      "/src/assets/vanioak/log-search.png",
+      "Log search"
+    ],
+    [
+      "/src/assets/vanioak/alert.png",
+      "Incident detail"
+    ]
+  ]
+}

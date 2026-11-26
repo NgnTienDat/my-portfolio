@@ -4,11 +4,11 @@ import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
 import { chromium } from 'playwright'
 
 const base = process.env.PORTFOLIO_URL || 'http://127.0.0.1:5173'
-const output = '.portfolio-checks/update'
+const output = '.portfolio-checks/redesign'
 await mkdir(output, { recursive: true })
 const hash = bytes => createHash('sha256').update(bytes).digest('hex')
 const reference = await readFile('public/portfolio.html')
-assert.equal(hash(reference), '58c504c436d6e937436282f97a16816259cb84e30377e021f74985242c01ff1c', 'Reference HTML changed')
+assert.equal(hash(reference), 'e6f924c700a0e3d5bd7d48be5bdb66f8c6c554f4f400fefb28119a10e2c8da1b', 'Neo-Brutalist reference HTML changed')
 
 const update = await readFile('public/Update-portfolior.html')
 assert.equal(hash(update), '860a070b936b10b5a3b368a04b3980b3fdee3928818ba401e424ed83fe1c5bf5', 'Updated reference HTML changed')
@@ -17,12 +17,20 @@ for (const [file, expected] of Object.entries(protectedFiles)) {
   assert.equal(hash(await readFile(file)), expected, `Selected work source changed: ${file}`)
 }
 
-// Adopt the updated design while retaining the approved responsive/gallery corrections.
-const expectedCss = update.toString().match(/<style>([\s\S]*?)<\/style>/)[1]
-  .replace('.shot.real img{display:block;width:100%;height:100%;object-fit:cover;object-position:left top}', '.shot.real img{display:block;width:100%;height:100%;object-fit:contain;object-position:center}')
-  .replace('.det-grid{grid-template-columns:1fr;gap:36px}', '.det-grid{grid-template-columns:minmax(0,1fr);gap:36px}')
-  .replace('.hero .wrap,.about{grid-template-columns:1fr;gap:48px}', '.hero .wrap,.about{grid-template-columns:minmax(0,1fr);gap:48px}')
-assert.equal((await readFile('src/styles/portfolio.css', 'utf8')).replace(/\r\n/g, '\n'), expectedCss.replace(/\r\n/g, '\n'), 'Unapproved design rule changed')
+const originalContent = JSON.parse(await readFile('scripts/portfolio-content.json', 'utf8'))
+assert.equal((await readFile('src/styles/portfolio.css', 'utf8')).replace(/\r\n/g, '\n'), reference.toString().match(/<style>([\s\S]*?)<\/style>/)[1].replace(/\r\n/g, '\n'), 'Reference stylesheet must be used without visual reinterpretation')
+function normalizeAssets(content) {
+  function asset(url) {
+    if (url?.startsWith('/src/assets/')) return `/asset/${url.split('/').at(-1)}`
+    if (url?.startsWith('/assets/')) return `/asset/${url.split('/').at(-1).replace(/-[\w-]{8}(?=\.[^.]+$)/, '')}`
+    return url
+  }
+  return {
+    ...content,
+    links: content.links.map(([text, href, ...attributes]) => [text, asset(href), ...attributes]),
+    images: content.images.map(([src, alt]) => [asset(src), alt]),
+  }
+}
 
 const resume = await readFile('src/assets/NguyenTienDat_CV.pdf')
 const assetHashes = new Set(await Promise.all((await readdir('dist/assets')).map(async name => hash(await readFile(`dist/assets/${name}`)))))
@@ -91,30 +99,76 @@ async function screenshot(page, width, state, fullPage = false) {
   await page.screenshot({ path: `${output}/${width}-${state}.png`, fullPage, animations: 'disabled' })
 }
 
-async function compareUnchangedDesign(width) {
+async function compareDesignReference(width) {
   const pages = [await newPage(width), await newPage(width)]
   try {
     for (let i = 0; i < pages.length; i++) {
       await pages[i].emulateMedia({ reducedMotion: 'reduce' })
-      await pages[i].goto(`${base}/${i === 0 ? 'Update-portfolior.html' : ''}`)
+      await pages[i].goto(`${base}/${i === 0 ? 'portfolio.html' : ''}`)
+      // The latest screenshot supersedes the HTML's desktop hero sizes.
+      if (i === 0) await pages[i].addStyleTag({ content: '@media(min-width:961px){.hero h1{font-size:clamp(32px,4vw,50px)}.hero .ide{min-height:330px}}' })
       await settle(pages[i])
     }
-    for (const selector of ['.pnav', '.ide', '.hero h1', '.pcard', '.step', '.contact', '.about', '.me-frame', '.me-frame img', '.me-tag', '.me-soc', '.me-cap', '.about-r .big', '.about-r .stmt', '.skill.wide', '.eb']) {
+    for (const selector of ['body', '.wrap', '.pnav', '.pnav .mono', '.pnav .cv', '.hero', '.hero .wrap', '.hero h1', '.hero mark', '.hero .nw .b', '.status', '.sub', '.lead', '.cta', '.social', '.ide', '.ide-bar', '.code', '.wd', '.mq', '.mq-t span', '.sh', '.sh h2', '.about', '.me-frame', '.me-tag', '.me-soc a', '.me-cap', '.about-r .big', '.about-r .stmt', '.pcard', '.p-body', '.p-ic', '.chips span', '.p-metric', '.p-btns', '.p-live', '#process', '.steps3', '.step', '.step .no', '.step p', '#experience', '.exp', '.row', '.row time', '.logo-t', '.row .role', '.row p', '#expertise', '.skill', '.skill li', '.skill.wide', '.faq details', '.faq summary', '.faq details p', '#contact', '.contact', '.contact h2', '.contact p', '.contact .btn', '.contact .soc a', '.detail', '.det-l', '.back', '.chip', '.det-title', '.det-tag', '.det-r h4', '.det-sec p', '.stats div', '.stats small', '.hint', '.gal', '.gal figcaption', '.gal figcaption b', '.car-btn', '.car-dots', '.car-dots button', 'footer', '.fgrid', '.flogo', '.fs a', '.fbot', '.eb', '.eb button']) {
       const styles = []
       for (const page of pages) {
-        styles.push(await page.locator(selector).first().evaluate(element => {
+        styles.push(await page.locator(selector).first().evaluate((element, selector) => {
           const style = getComputedStyle(element)
-          return Object.fromEntries([
-            'fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing',
-            'color', 'backgroundColor', 'borderTopWidth', 'borderTopColor', 'borderRadius',
-            'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft',
-            'boxShadow', 'gap', 'display', 'position',
-          ].map(property => [property, style[property]]))
-        }))
+          const properties = [
+            'fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing', 'color',
+            'backgroundColor', 'backgroundImage', 'backgroundSize', 'borderTopWidth', 'borderTopColor', 'borderRadius', 'boxShadow',
+            'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'marginTop', 'marginRight', 'marginBottom', 'marginLeft',
+            'gap', 'display', 'position', 'textAlign', 'alignItems', 'justifyContent',
+          ]
+          if (['.pnav .mono', '.step .no', '.logo-t', '.car-btn', '.car-dots button', '.fs a'].includes(selector)) properties.push('width', 'height')
+          return Object.fromEntries(properties.map(property => [property, style[property]]))
+        }, selector))
       }
-      assert.deepEqual(styles[1], styles[0], `Approved component styles changed: ${width}px ${selector}`)
+      assert.deepEqual(styles[1], styles[0], `Neo-Brutalist reference differs: ${width}px ${selector}`)
       designComparisons.push({ width, selector, styles: styles[1] })
     }
+    if (width >= 390) {
+      const heights = await Promise.all(pages.map(page => page.locator('.hero').evaluate(element => element.getBoundingClientRect().height)))
+      assert.equal(heights[1], heights[0], `Hero height differs from HTML at ${width}px`)
+    }
+    if (width >= 1350) {
+      const hero = await pages[1].locator('.hero').evaluate(element => {
+        const title = element.querySelector('h1')
+        return {
+          lines: Math.round(title.getBoundingClientRect().height / parseFloat(getComputedStyle(title).lineHeight)),
+          ideHeight: element.querySelector('.ide').getBoundingClientRect().height,
+          linksBottom: element.querySelector('.social').getBoundingClientRect().bottom,
+        }
+      })
+      assert.equal(hero.lines, 3, 'Desktop title must fit three lines as in the supplied screenshot')
+      assert.equal(hero.ideHeight, 330)
+      assert(hero.linksBottom < 744, 'Social links must remain visible in the screenshot-sized viewport')
+    }
+    for (const [selector, pseudo] of [['.hero .cur', null], ['.mq-t span', '::after'], ['.sh h2', '::before'], ['.faq summary', '::after'], ['.car-dots button', '::before']]) {
+      const styles = await Promise.all(pages.map(page => page.locator(selector).first().evaluate((element, pseudo) => {
+        const style = getComputedStyle(element, pseudo)
+        return Object.fromEntries(['width', 'height', 'color', 'backgroundColor', 'borderRadius', 'borderTopWidth', 'borderTopColor', 'fontSize', 'marginLeft'].map(property => [property, style[property]]))
+      }, pseudo)))
+      assert.deepEqual(styles[1], styles[0], `Reference decoration differs: ${width}px ${selector}${pseudo || ''}`)
+      designComparisons.push({ width, selector: `${selector}${pseudo || ''}`, styles: styles[1] })
+    }
+    assert.deepEqual(await pages[1].locator('.mq-t span').allTextContents(), await pages[0].locator('.mq-t span').allTextContents(), 'Marquee technologies or duplicate loop changed')
+    assert.equal(await pages[1].locator('.mq-t [aria-hidden="true"]').count(), 13)
+    await pages[1].emulateMedia({ reducedMotion: 'no-preference' })
+    assert.equal(await pages[1].locator('.mq-t').evaluate(element => getComputedStyle(element).animationDuration), '45s')
+    await pages[1].emulateMedia({ reducedMotion: 'reduce' })
+    assert.equal(await pages[1].locator('.mq-t').evaluate(element => getComputedStyle(element).animationName), 'none')
+    const violations = await pages[1].evaluate(() => [...document.querySelectorAll('*')].flatMap(element => {
+      const style = getComputedStyle(element)
+      const issues = []
+      if (style.backdropFilter !== 'none') issues.push('backdrop blur')
+      if (style.backgroundImage.includes('gradient') && !['hero', 'contact'].includes(element.id) && !element.classList.contains('hero')) issues.push('gradient')
+      for (const shadow of style.boxShadow.matchAll(/rgba?\([^)]+\)\s+(-?[\d.]+)px\s+(-?[\d.]+)px\s+([\d.]+)px/g)) {
+        if (Number(shadow[3]) !== 0) issues.push('soft shadow')
+      }
+      return issues.map(issue => `${element.tagName}.${element.className}: ${issue}`)
+    }))
+    assert.deepEqual(violations, [], 'Forbidden visual effects')
   } finally {
     await Promise.all(pages.map(page => page.close()))
   }
@@ -130,6 +184,8 @@ async function verifyEmail(page, width) {
     } })
   })
   for (const link of await page.locator('[data-email]').all()) {
+    // Start outside the target so scrolling cannot consume the hover's mouseenter.
+    await page.mouse.move(0, 0)
     await link.evaluate(element => {
       element.scrollIntoView({ block: 'center', behavior: 'instant' })
       element.focus({ preventScroll: true })
@@ -157,7 +213,7 @@ async function verifyEmail(page, width) {
     assert(await link.evaluate(element => element === document.activeElement))
     await link.evaluate(element => element.blur())
   }
-  assert.deepEqual(await page.evaluate(() => window.copiedEmails), Array(6).fill('tie.dat2004@gmail.com'))
+  assert.deepEqual(await page.evaluate(() => window.copiedEmails), Array(10).fill('tie.dat2004@gmail.com'))
   if (width === 1440) {
     const link = page.locator('.social [data-email]')
     await link.evaluate(element => {
@@ -205,6 +261,18 @@ async function verify(width) {
     assert.equal(await page.locator('meta[name="theme-color"]').getAttribute('content'), '#F6F8FD')
     assert.deepEqual(await page.locator('#home section').evaluateAll(sections => sections.map(section => section.id)), ['about', 'work', 'process', 'experience', 'expertise', 'faq', 'contact'])
     const text = await page.locator('body').textContent()
+    const content = await page.evaluate(() => {
+      const home = document.querySelector('#home').cloneNode(true)
+      home.querySelector('.mq').remove()
+      const footer = document.querySelector('footer')
+      const footerLinks = [...footer.querySelectorAll('.fgrid>div:nth-child(3)>a')].slice(0, 2).concat(footer.querySelector('.fbot>a'))
+      return {
+        text: [home, ...document.querySelectorAll('main.detail')].map(element => element.textContent.replace(/\s+/g, ' ').trim()).concat(footer.querySelector('.fbot span').textContent + footerLinks.map(element => element.textContent).join('')),
+        links: [...document.querySelectorAll('a')].filter(element => !element.closest('footer')).concat(footerLinks).map(element => [element.textContent, element.getAttribute('href'), element.getAttribute('download'), element.getAttribute('target'), element.getAttribute('aria-label')]),
+        images: [...document.images].map(element => [element.getAttribute('src'), element.getAttribute('alt')]),
+      }
+    })
+    assert.deepEqual(normalizeAssets(content), normalizeAssets(originalContent), 'Existing content, links, image sources, or accessibility labels changed')
     assert(!/406|Replace with|Use post-detail\.png|Elasticsearch/.test(text), 'Stale or draft content remains')
     assert(text.includes('December 2026') && text.includes('Available immediately'))
     assert.equal(await page.locator('.pcard').count(), 3)
@@ -216,11 +284,12 @@ async function verify(width) {
     assert((await page.locator('.about-r').textContent()).includes('Shipping is a milestone, not the finish line.'))
     assert.equal(await page.locator('.skill.wide h3').textContent(), 'AI coding tools')
     assert.equal(await page.locator('.skill.wide li').allTextContents().then(items => items.join(', ')), 'ChatGPT, OpenAI Codex')
-    assert.equal(await page.locator('[data-email]').count(), 3)
+    assert.equal(await page.locator('[data-email]').count(), 5)
     await verifyEmail(page, width)
     const downloads = page.locator('a[download="NguyenTienDat_CV.pdf"]')
-    assert.equal(await downloads.count(), 2)
+    assert.equal(await downloads.count(), 3)
     assert.equal(await downloads.nth(0).getAttribute('href'), await downloads.nth(1).getAttribute('href'))
+    assert.equal(await downloads.nth(0).getAttribute('href'), await downloads.nth(2).getAttribute('href'))
     if (width === 1440) {
       const downloadReady = page.waitForEvent('download')
       await downloads.nth(1).click()
@@ -314,12 +383,12 @@ async function verify(width) {
 
 try {
   for (const width of [1440, 820, 390, 320]) {
-    await compareUnchangedDesign(width)
+    await compareDesignReference(width)
     await verify(width)
   }
   await writeFile(`${output}/report.json`, JSON.stringify({ designComparisons, responsive, errors }, null, 2))
   assert.deepEqual(errors, [], 'Browser errors')
-  console.log(`${designComparisons.length} unchanged-design comparisons and ${responsive.length} overflow checks passed. Reference HTML and supplied asset bytes are preserved.`)
+  console.log(`${designComparisons.length} Neo-Brutalist reference comparisons and ${responsive.length} overflow checks passed. Existing content, links, reference HTML, and supplied asset bytes are preserved.`)
 } finally {
   await browser.close()
 }

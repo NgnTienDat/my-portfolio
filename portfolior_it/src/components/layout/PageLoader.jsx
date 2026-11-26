@@ -1,6 +1,8 @@
+import { useLanguage } from '../../i18n/language.js'
 import { useEffect, useLayoutEffect, useState } from 'react'
 
 export default function PageLoader({ children }) {
+  const { t } = useLanguage()
   const [progress, setProgress] = useState(0)
   const [phase, setPhase] = useState('loading')
   const loading = phase !== 'complete'
@@ -50,10 +52,10 @@ export default function PageLoader({ children }) {
     <>
       <div className="portfolio-content" inert={loading} aria-busy={loading}>{children}</div>
       {loading && <div className={`page-loader${phase === 'leaving' ? ' leaving' : ''}`}>
-        <div className="loader-content" role="progressbar" aria-label="Loading portfolio" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
+        <div className="loader-content" role="progressbar" aria-label={t("Loading portfolio")} aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
           <div className="loader-number" aria-hidden="true"><b>{progress}</b><span>%</span></div>
           <div className="loader-track" aria-hidden="true"><span style={{ transform: `scaleX(${progress / 100})` }} /></div>
-          <p>Crafting your experience</p>
+          <p>{t("Crafting your experience")}</p>
         </div>
       </div>}
     </>

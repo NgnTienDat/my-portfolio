@@ -1,7 +1,9 @@
+import { useLanguage } from '../../i18n/language.js'
 import { useEffect, useState } from 'react'
 import resume from '../../assets/NguyenTienDat_CV.pdf'
 
 export default function Navbar() {
+  const { t } = useLanguage()
   const [collapsed, setCollapsed] = useState(false)
 
   useEffect(() => {
@@ -33,12 +35,12 @@ export default function Navbar() {
   }, [])
 
   return (
-<div className="navw"><nav className={`pnav${collapsed ? ' min' : ''}`} id="pnav" aria-label="Main">
- <a className="mono" href="#top" aria-label="Nguyen Tien Dat, home">DN</a>
+<div className="navw"><nav className={`pnav${collapsed ? ' min' : ''}`} id="pnav" aria-label={t("Main")}>
+ <a className="mono" href="#top" aria-label={t("Nguyen Tien Dat, home")}>DN</a>
  <span className="nm" aria-hidden="true"><span><b>Nguyen Tien Dat</b></span></span>
  <div className="lk"><div className="lk-in">
-  <a href="#about">About</a><a href="#work">Work</a><a href="#process">Process</a><a href="#experience">Experience</a>
-  <a className="cv" href={resume} download="NguyenTienDat_CV.pdf">Resume</a>
+  <a href="#about">{t("About")}</a><a href="#work">{t("Work")}</a><a href="#process">{t("Process")}</a><a href="#experience">{t("Experience")}</a>
+  <a className="cv" href={resume} download="NguyenTienDat_CV.pdf">{t("Resume")}</a>
  </div></div>
 </nav></div>
   )

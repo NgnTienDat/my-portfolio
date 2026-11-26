@@ -1,7 +1,9 @@
+import { useLanguage } from '../../i18n/language.js'
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 
 export default function ProjectImageModal({ label, slides, index, onChange, onClose }) {
+  const { t } = useLanguage()
   const dialog = useRef(null)
   const slide = slides[index]
 
@@ -55,15 +57,15 @@ export default function ProjectImageModal({ label, slides, index, onChange, onCl
       <div className="image-modal-header">
         <span>{label}</span>
         <span className="image-modal-count" aria-live="polite">{index + 1} / {slides.length}</span>
-        <button type="button" className="image-modal-close" aria-label="Close enlarged image" onClick={onClose}>×</button>
+        <button type="button" className="image-modal-close" aria-label={t("Close enlarged image")} onClick={onClose}>×</button>
       </div>
       <figure className="image-modal-figure">
         <div className="image-modal-media">
-          <div className="image-modal-viewport" tabIndex={0} role="region" aria-label={`${slide.title} image, scroll to explore`}>
+          <div className="image-modal-viewport" tabIndex={0} role="region" aria-label={`${slide.title} ${t('image, scroll to explore')}`}>
             <img src={slide.image} alt={slide.title} />
           </div>
-          <button type="button" className={`car-btn prev${index === 0 ? ' off' : ''}`} aria-label="Previous enlarged image" disabled={index === 0} onClick={() => onChange(index - 1)} />
-          <button type="button" className={`car-btn next${index === slides.length - 1 ? ' off' : ''}`} aria-label="Next enlarged image" disabled={index === slides.length - 1} onClick={() => onChange(index + 1)} />
+          <button type="button" className={`car-btn prev${index === 0 ? ' off' : ''}`} aria-label={t("Previous enlarged image")} disabled={index === 0} onClick={() => onChange(index - 1)} />
+          <button type="button" className={`car-btn next${index === slides.length - 1 ? ' off' : ''}`} aria-label={t("Next enlarged image")} disabled={index === slides.length - 1} onClick={() => onChange(index + 1)} />
         </div>
         <figcaption><b>{slide.title}</b>{slide.description}</figcaption>
       </figure>

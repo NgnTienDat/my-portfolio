@@ -10,6 +10,7 @@
     "test": "node scripts/verify-portfolio.mjs",
     "test:cleanup": "node scripts/verify-cleanup.mjs",
     "test:interactions": "node scripts/verify-interactions.mjs",
+    "test:language": "node scripts/verify-language.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

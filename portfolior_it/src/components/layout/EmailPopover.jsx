@@ -1,3 +1,4 @@
+import { useLanguage } from '../../i18n/language.js'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 const email = 'tie.dat2004@gmail.com'
@@ -26,6 +27,7 @@ async function copyEmail() {
 }
 
 export default function EmailPopover() {
+  const { t } = useLanguage()
   const bubble = useRef(null)
   const [notice, setNotice] = useState(null)
 
@@ -40,7 +42,7 @@ export default function EmailPopover() {
     element.style.left = `${left}px`
     element.style.top = `${above < 8 ? rect.bottom + 12 : above}px`
     element.style.setProperty('--tx', `${center - left}px`)
-  }, [notice])
+  }, [notice, t])
 
   useEffect(() => {
     const element = bubble.current
@@ -104,8 +106,8 @@ export default function EmailPopover() {
   const copied = notice?.message === 'Copied!'
   return (
     <div ref={bubble} className={`eb${notice ? ' on' : ''}${copied ? ' ok' : ''}`} inert={!notice} aria-hidden={!notice}>
-      <span role="status">{notice?.message || email}</span>
-      <button type="button" aria-label="Copy email address">
+      <span role="status">{t(notice?.message || email)}</span>
+      <button type="button" aria-label={t("Copy email address")}>
         <svg viewBox="0 0 24 24" aria-hidden="true">
           {copied ? <path d="m5 12.5 4.5 4.5L19 7.5" /> : <><rect x="9" y="9" width="11" height="11" rx="2.5" /><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15" /></>}
         </svg>

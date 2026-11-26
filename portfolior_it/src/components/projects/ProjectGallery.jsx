@@ -1,7 +1,9 @@
+import { useLanguage } from '../../i18n/language.js'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import ProjectImageModal from './ProjectImageModal.jsx'
 
 export default function ProjectGallery({ label, slides }) {
+  const { t } = useLanguage()
   const gallery = useRef(null)
   const count = slides.length
   const [index, setIndex] = useState(0)
@@ -38,19 +40,19 @@ export default function ProjectGallery({ label, slides }) {
   return (
     <div className="car">
       <div className="car-nav">
-        <button type="button" className={`car-btn prev${index === 0 ? ' off' : ''}`} aria-label="Previous image" tabIndex={index === 0 ? -1 : 0} onClick={() => go(index - 1)}></button>
-        <button type="button" className={`car-btn next${index === count - 1 ? ' off' : ''}`} aria-label="Next image" tabIndex={index === count - 1 ? -1 : 0} onClick={() => go(index + 1)}></button>
+        <button type="button" className={`car-btn prev${index === 0 ? ' off' : ''}`} aria-label={t("Previous image")} tabIndex={index === 0 ? -1 : 0} onClick={() => go(index - 1)}></button>
+        <button type="button" className={`car-btn next${index === count - 1 ? ' off' : ''}`} aria-label={t("Next image")} tabIndex={index === count - 1 ? -1 : 0} onClick={() => go(index + 1)}></button>
       </div>
       <div className="gal" role="region" aria-label={label} tabIndex="0" ref={gallery}>
         {slides.map((slide, i) => <figure key={slide.image}>
-          <button type="button" className="shot real shot-open" aria-label={`Enlarge ${slide.title}`} onClick={() => setExpanded(i)}>
+          <button type="button" className="shot real shot-open" aria-label={`${t('Enlarge')} ${slide.title}`} onClick={() => setExpanded(i)}>
             <img src={slide.image} alt={slide.title} />
           </button>
           <figcaption><b>{slide.title}</b>{slide.description}</figcaption>
         </figure>)}
       </div>
       <div className="car-dots">
-        {slides.map((slide, i) => <button key={slide.image} type="button" className={i === index ? 'on' : undefined} aria-label={`Go to image ${i + 1}`} aria-current={i === index ? 'true' : undefined} onClick={() => go(i)}></button>)}
+        {slides.map((slide, i) => <button key={slide.image} type="button" className={i === index ? 'on' : undefined} aria-label={`${t('Go to image')} ${i + 1}`} aria-current={i === index ? 'true' : undefined} onClick={() => go(i)}></button>)}
       </div>
       {expanded !== null && <ProjectImageModal label={label} slides={slides} index={expanded} onChange={setExpanded} onClose={closeModal} />}
     </div>

@@ -63,7 +63,7 @@ try {
     window.lifecycleCounts = () => ({ observers: observers.size, listeners: listeners.size, frames: frames.size, timers: timers.size })
   })
   await page.goto(`${process.env.PORTFOLIO_URL || 'http://127.0.0.1:5173'}/.portfolio-checks/lifecycle.html`)
-  await page.waitForFunction(() => window.lifecycleCounts().observers === 1 && window.lifecycleCounts().listeners === 29)
+  await page.waitForFunction(() => window.lifecycleCounts().observers === 1 && window.lifecycleCounts().listeners === 39)
   const loading = await page.evaluate(() => {
     const pending = window.lifecycleCounts()
     window.testRoot.unmount()
@@ -74,10 +74,10 @@ try {
   assert.deepEqual(loading.unmounted, { observers: 0, listeners: 0, frames: 0, timers: 0 })
   assert.equal(loading.overflow, '')
   await page.evaluate(() => { delete document.fonts.ready; window.mountPortfolio() })
-  await page.waitForFunction(() => !document.querySelector('.page-loader') && window.lifecycleCounts().listeners === 29)
+  await page.waitForFunction(() => !document.querySelector('.page-loader') && window.lifecycleCounts().listeners === 39)
   await page.evaluate(() => { location.hash = 'project-theou' })
   await page.locator('#v-theou .shot-open').first().click()
-  await page.waitForFunction(() => window.lifecycleCounts().listeners === 30)
+  await page.waitForFunction(() => window.lifecycleCounts().listeners === 40)
   const counts = await page.evaluate(async () => {
     window.dispatchEvent(new Event('scroll'))
     document.querySelectorAll('.gal').forEach(gallery => gallery.dispatchEvent(new Event('scroll')))

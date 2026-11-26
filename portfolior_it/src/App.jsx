@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useSyncExternalStore } from 'react'
 import Navbar from './components/layout/Navbar.jsx'
 import Footer from './components/layout/Footer.jsx'
 import Hero from './components/sections/Hero.jsx'
+import TechMarquee from './components/sections/TechMarquee.jsx'
 import About from './components/sections/About.jsx'
 import SelectedWork from './components/sections/SelectedWork.jsx'
 import Process from './components/sections/Process.jsx'
@@ -13,6 +14,9 @@ import EmailPopover from './components/layout/EmailPopover.jsx'
 import PageLoader from './components/layout/PageLoader.jsx'
 import ProjectDetail from './components/projects/ProjectDetail.jsx'
 import { projects } from './data/projects.js'
+import LanguageProvider from './i18n/LanguageProvider.jsx'
+import { useLanguage } from './i18n/language.js'
+import localizeProject from './i18n/localizeProject.js'
 import './styles/portfolio.css'
 import './styles/interactions.css'
 
@@ -26,22 +30,31 @@ function getHash() {
 }
 
 export default function App() {
+  return <LanguageProvider><Portfolio /></LanguageProvider>
+}
+
+function Portfolio() {
+  const { t } = useLanguage()
   const hash = useSyncExternalStore(subscribe, getHash)
   const project = projects.find(item => hash === `project-${item.id}`)
   const wasProject = useRef(false)
 
   useLayoutEffect(() => {
     if (project) {
-      document.title = `${project.title} — Nguyen Tien Dat`
       window.scrollTo({ top: 0, behavior: 'instant' })
     } else {
-      document.title = 'Nguyen Tien Dat — Software Engineer'
       const target = hash ? document.getElementById(hash) : null
       if (target) target.scrollIntoView({ behavior: 'instant' })
       else if (wasProject.current) window.scrollTo({ top: 0, behavior: 'instant' })
     }
     wasProject.current = Boolean(project)
   }, [hash, project])
+
+  useLayoutEffect(() => {
+    document.title = project ? `${t(project.title)} — Nguyen Tien Dat` : 'Nguyen Tien Dat — Software Engineer'
+    const description = document.querySelector('meta[name="description"]')
+    if (description) description.content = t('Java-focused software engineer in Ho Chi Minh City, building backend systems and deployed products. Open to internship and graduate roles.')
+  }, [project, t])
 
   useEffect(() => {
     const elements = document.querySelectorAll('.rv')
@@ -67,6 +80,7 @@ export default function App() {
       <main id="home" hidden={Boolean(project)}>
         <span id="top"></span>
         <Hero />
+        <TechMarquee />
         <About />
         <SelectedWork />
         <Process />
@@ -75,7 +89,7 @@ export default function App() {
         <FAQ />
         <Contact />
       </main>
-      {projects.map(item => <ProjectDetail key={item.id} project={item} hidden={project !== item} />)}
+      {projects.map(item => <ProjectDetail key={item.id} project={localizeProject(item, t)} hidden={project !== item} />)}
       <Footer />
       <EmailPopover />
     </PageLoader>
